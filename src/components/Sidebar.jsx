@@ -35,13 +35,17 @@ function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 z-20 h-screen w-64 border-r border-blue-800 bg-blue-600 text-blue-50">
-      <div className="flex h-full flex-col p-6">
-        <div className="mb-8 rounded-xl bg-blue-500/60 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-100">Healthcare AI</p>
-          <h1 className="mt-2 text-2xl font-bold leading-tight text-white">AI SMART CARE</h1>
+      <div className="flex h-full flex-col overflow-hidden">
+        {/* Header — pinned */}
+        <div className="shrink-0 p-6 pb-4">
+          <div className="rounded-xl bg-blue-500/60 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-100">Healthcare AI</p>
+            <h1 className="mt-2 text-2xl font-bold leading-tight text-white">AI SMART CARE</h1>
+          </div>
         </div>
 
-        <nav className="space-y-2">
+        {/* Nav — scrollable */}
+        <nav className="flex-1 overflow-y-auto px-6 pb-2 space-y-1 scrollbar-hide">
           {navItems.map((item) => {
             const Icon = item.icon
             return (
@@ -61,7 +65,8 @@ function Sidebar() {
           })}
         </nav>
 
-        <div className="mt-auto pt-4">
+        {/* Language selector — pinned at bottom */}
+        <div className="shrink-0 border-t border-blue-500 p-6 pt-4">
           <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-blue-100">Language</label>
           <select
             value={language}
