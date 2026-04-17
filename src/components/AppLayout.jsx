@@ -1,5 +1,8 @@
 import { Outlet } from "react-router-dom"
 import Sidebar from "./Sidebar"
+import { ToastContainer } from "./Toast"
+import HealthChatbot from "./HealthChatbot"
+import MedicineReminderPopup from "./MedicineReminderPopup"
 
 function AppLayout() {
   return (
@@ -10,6 +13,9 @@ function AppLayout() {
           <Outlet />
         </div>
       </main>
+      <ToastContainer />
+      <HealthChatbot />
+      <MedicineReminderPopup />
     </div>
   )
 }

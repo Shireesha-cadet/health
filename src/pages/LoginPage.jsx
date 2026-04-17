@@ -6,28 +6,33 @@ import { setCurrentUser } from "../utils/session"
 
 function LoginPage() {
   const navigate = useNavigate()
+  const [mode, setMode] = useState("login") // "login" | "register"
   const [formData, setFormData] = useState({ name: "", email: "", password: "" })
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleChange = (event) => {
-    const { name, value } = event.target
+  const handleChange = (e) => {
+    const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault()
     setError("")
+    setLoading(true)
     try {
       let response
-      try {
+      if (mode === "login") {
         response = await api.login({ email: formData.email, password: formData.password })
-      } catch {
+      } else {
         response = await api.register(formData)
       }
       setCurrentUser(response.user)
       navigate("/setup/contacts")
-    } catch (requestError) {
-      setError(requestError.message)
+    } catch (err) {
+      setError(err.message || "Something went wrong. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -42,16 +47,36 @@ function LoginPage() {
           <p className="mt-1 text-sm text-slate-500">Secure elderly healthcare monitoring</p>
         </div>
 
+        {/* Mode toggle */}
+        <div className="mb-6 flex rounded-lg bg-slate-100 p-1">
+          <button
+            type="button"
+            onClick={() => { setMode("login"); setError("") }}
+            className={`flex-1 rounded-md py-2 text-sm font-semibold transition ${mode === "login" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500"}`}
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => { setMode("register"); setError("") }}
+            className={`flex-1 rounded-md py-2 text-sm font-semibold transition ${mode === "register" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500"}`}
+          >
+            Register
+          </button>
+        </div>
+
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none ring-blue-300 transition focus:ring-2"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Name"
-            required
-          />
+          {mode === "register" && (
+            <input
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none ring-blue-300 transition focus:ring-2"
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Full Name"
+              required
+            />
+          )}
           <input
             className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none ring-blue-300 transition focus:ring-2"
             type="email"
@@ -72,12 +97,24 @@ function LoginPage() {
           />
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white transition hover:bg-blue-700"
+            disabled={loading}
+            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-70"
           >
-            Login
+            {loading ? "Please wait..." : mode === "login" ? "Login" : "Create Account"}
           </button>
           {error && <p className="text-sm text-red-600">{error}</p>}
         </form>
+
+        <p className="mt-4 text-center text-sm text-slate-500">
+          {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+          <button
+            type="button"
+            onClick={() => { setMode(mode === "login" ? "register" : "login"); setError("") }}
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            {mode === "login" ? "Register" : "Login"}
+          </button>
+        </p>
       </div>
     </div>
   )
